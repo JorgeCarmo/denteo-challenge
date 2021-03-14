@@ -38,19 +38,19 @@
     </v-app-bar>
 
     <v-main>
-      <HelloWorld/>
+      <time-slot-list/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import TimeSlotList from './components/TimeSlotList.vue';
 
 export default {
   name: 'App',
 
   components: {
-    HelloWorld,
+    TimeSlotList
   },
 
   data: () => ({
