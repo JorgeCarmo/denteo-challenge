@@ -24,7 +24,7 @@ export default {
             { from: "2021-01-06T11:00:00", to: "2021-01-06T12:30:00" },
             { from: "2021-01-06T17:30:00", to: "2021-01-06T18:00:00" },
         ],
-
+        openTimeSlots: [],
 
 
         timeSlotSizeInMinutes: 30,
@@ -49,13 +49,27 @@ export default {
             seconds: 0
         }
     },
+    mutations: {
+        // Possible change, implement selection of day range
+        searchRange (state, data) {
+            state.searchRange = data
+        },
+        updateOpenTimeSlots (state, data) {
+            state.openTimeSlots = data
+        },
+        addAppointment (state, data) {
+            state.weeklyAppointments.push(data)
+            state.openTimeSlots = _.without(state.openTimeSlots, data)
+            console.log(state.openTimeSlots, data)
+        }
+      },
     actions: {
-        async findFreeTimeslots ({state}) {
+        async findFreeTimeslots ({state, commit}) {
             let currentDay = new Date(state.searchRange.from)
             const dayStart = currentDay.getDate()
             const dayEnd = new Date(state.searchRange.to).getDate()
 
-            let openAppointments = []
+            let openTimeSlots = []
             for (let i = dayStart; i <= dayEnd; i++) {
                 currentDay.setDate(i)
                 let currentDayAppointmentList = _.filter(state.weeklyAppointments, 
@@ -84,12 +98,12 @@ export default {
                     // Check if the possible timeslot overlaps with any of the appointments
                     if(!_.some(currentDayAppointmentList,  (aux) => checkOverlaps(auxAppointment, aux)))
                     {
-                        openAppointments.push(auxAppointment)
+                        openTimeSlots.push(auxAppointment)
                     }
                     currentDay = new Date(currentDay.getTime() + state.timeSlotSizeInMinutes*60000)
                 }
             }
-            return openAppointments
+            commit('updateOpenTimeSlots', openTimeSlots)
         }
     }
 }
